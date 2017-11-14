@@ -9,7 +9,7 @@ train<- fread("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upl
 drv <- JDBC("com.mysql.jdbc.Driver",
             "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
 
-con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","api", "vfnhbo8934ykfjhg")
 train$DATE_ZALIVA <- Sys.Date()
 train$DATE <- as.character(train$DATE)
 train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
