@@ -15,7 +15,7 @@ getwd()
 # all_city_id$coord <- NULL
 
 # API key
-key <- "bab64f8cbd90271f5da08e40a4f4e968"
+key <- "key"
 
 api_forecatby_id <- "api.openweathermap.org/data/2.5/forecast?id="
 city_id <- "797062"
