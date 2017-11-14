@@ -106,4 +106,3 @@ grnd_level, humidity, temp_kf) VALUES
   print(i/nrow(weather))
 }
 dbDisconnect(con)
-
