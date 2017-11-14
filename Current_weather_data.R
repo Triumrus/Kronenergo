@@ -80,7 +80,7 @@ weather
 drv <- JDBC("com.mysql.jdbc.Driver",
             "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
 
-con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","api", "vfnhbo8934ykfjhg")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","login", "password")
 
 # Презапись таблицы 
 # dbWriteTable(con,"weather",weather)
