@@ -15,7 +15,7 @@ getwd()
 # all_city_id$coord <- NULL
 
 # API key
-key <- "key"
+key <- "bab64f8cbd90271f5da08e40a4f4e968"
 
 api_forecatby_id <- "api.openweathermap.org/data/2.5/forecast?id="
 city_id <- "797062"
@@ -58,6 +58,17 @@ weather$pod <- as.factor(weather$pod)
 weather$main <- as.factor(weather$main)
 weather$description <- as.factor(weather$description)
 weather$icon <- as.factor(weather$icon)
+names(weather) <- gsub("^id","weather_id",names(weather))
+weather[,`:=`(
+  city_id=a$city$id
+  # city_name=a$city$name,
+  # city_lat=a$city$coord$lat,
+  # city_lon=a$city$coord$lon,
+  # city_country=a$city$country
+  
+)]
+
+
 str(weather)
 rm(list = ls()[ls()!="weather"])
 weather$hour <- as.numeric(as.character(weather$hour))
@@ -73,14 +84,13 @@ weather4<- weather4[order(date,hour)]
 weather<- copy(weather4)
 rm(list = ls()[ls()!="weather"])
 names(weather)<- gsub("^all","alll",names(weather))
-names(weather)<- gsub("^id","city_id",names(weather))
 weather
 
 
 drv <- JDBC("com.mysql.jdbc.Driver",
             "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
-
-con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","login", "password")
+#TODO поменять на API когда заработает
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
 
 # Презапись таблицы 
 # dbWriteTable(con,"weather",weather)
@@ -95,12 +105,12 @@ weather$icon<- as.character(weather$icon)
 
 for(i in 1:nrow(weather)){
   req <- paste("INSERT INTO weather (date, hour, pod, rain, speed, deg, alll, 
-city_id, main, description, icon, temp, temp_min, temp_max, pressure, sea_level,
-grnd_level, humidity, temp_kf) VALUES
+weather_id, main, description, icon, temp, temp_min, temp_max, pressure, sea_level,
+grnd_level, humidity, temp_kf,city_id) VALUES
                ('",weather[i,1],"',",weather[i,2],",'",weather[i,3],"',",ifelse(is.na(weather[i,4]),"NULL",weather[i,4]),",",weather[i,5],","
                ,weather[i,6],",",weather[i,7],",",weather[i,8],",'",weather[i,9],"','",weather[i,10],"','"
                ,weather[i,11],"',",weather[i,12],",",weather[i,13],",",weather[i,14],",",weather[i,15],","
-               ,weather[i,16],",",weather[i,17],",",weather[i,18],",",weather[i,19],")",sep = "")
+               ,weather[i,16],",",weather[i,17],",",weather[i,18],",",weather[i,19],",",weather[i,20],")",sep = "")
   # not run, but do to send your query 
   dbSendUpdate(con,req)
   print(i/nrow(weather))
