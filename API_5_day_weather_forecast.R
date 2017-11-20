@@ -47,28 +47,26 @@ weather_wind <- a$list$wind
 # Инфомарция о погоде возможные обьем осадков
 weather_rain<- a$list$rain
 names(weather_rain) <- "rain"
+
+# Инфомарция о погоде возможные обьем осадков снега
+# list.rain.3h Rain volume for last 3 hours, mm
+weather_snow<- a$list$snow
+names(weather_snow) <- "snow"
+
+
 # НЕЗНАЮ
 weather_sys<- a$list$sys
 
 #Инфомарция о погоде Дата и час погоды
 weather_data<- data.frame(date=as.Date(a$list$dt_txt,"%Y-%m-%d"),hour=as.character(format(as.POSIXlt(a$list$dt_txt,"%Y-%m-%d %H:%M:%S"),"%H")))
 
-weather<- as.data.table(cbind(weather_data,weather_sys,weather_rain,weather_wind,weather_clouds,weather_weather,weather_main))
+weather<- as.data.table(cbind(weather_data,a$city$id,weather_main,weather_weather,weather_clouds,weather_wind,weather_rain,weather_snow,weather_sys))
 weather$pod <- as.factor(weather$pod)
 weather$main <- as.factor(weather$main)
 weather$description <- as.factor(weather$description)
 weather$icon <- as.factor(weather$icon)
 names(weather) <- gsub("^id","weather_id",names(weather))
-weather[,`:=`(
-  city_id=a$city$id
-  # city_name=a$city$name,
-  # city_lat=a$city$coord$lat,
-  # city_lon=a$city$coord$lon,
-  # city_country=a$city$country
-  
-)]
-
-
+names(weather)[3] <- "city_id"
 str(weather)
 rm(list = ls()[ls()!="weather"])
 weather$hour <- as.numeric(as.character(weather$hour))
@@ -89,7 +87,7 @@ weather
 
 drv <- JDBC("com.mysql.jdbc.Driver",
             "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
-#TODO поменять на API когда заработает
+
 con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
 
 # Презапись таблицы 
@@ -104,13 +102,13 @@ weather$icon<- as.character(weather$icon)
 
 
 for(i in 1:nrow(weather)){
-  req <- paste("INSERT INTO weather (date, hour, pod, rain, speed, deg, alll, 
-weather_id, main, description, icon, temp, temp_min, temp_max, pressure, sea_level,
-grnd_level, humidity, temp_kf,city_id) VALUES
-               ('",weather[i,1],"',",weather[i,2],",'",weather[i,3],"',",ifelse(is.na(weather[i,4]),"NULL",weather[i,4]),",",weather[i,5],","
-               ,weather[i,6],",",weather[i,7],",",weather[i,8],",'",weather[i,9],"','",weather[i,10],"','"
-               ,weather[i,11],"',",weather[i,12],",",weather[i,13],",",weather[i,14],",",weather[i,15],","
-               ,weather[i,16],",",weather[i,17],",",weather[i,18],",",weather[i,19],",",weather[i,20],")",sep = "")
+  req <- paste("INSERT INTO weather (date, hour, city_id,temp,temp_min, temp_max, pressure, sea_level,
+grnd_level, humidity, temp_kf,weather_id, main, description, icon, alll, speed, deg, rain,snow,pod
+  ) VALUES
+               ('",weather[i,1],"',",weather[i,2],",",weather[i,3],",",weather[i,4],",",weather[i,5],","
+               ,weather[i,6],",",weather[i,7],",",weather[i,8],",",weather[i,9],",",weather[i,10],","
+               ,weather[i,11],",",weather[i,12],",'",weather[i,13],"','",weather[i,14],"','",weather[i,15],"',"
+               ,weather[i,16],",",weather[i,17],",",weather[i,18],",",ifelse(is.na(weather[i,19]),"NULL",weather[i,19]),",",ifelse(is.na(weather[i,20]),"NULL",weather[i,20]),",'",weather[i,21],"')",sep = "")
   # not run, but do to send your query 
   dbSendUpdate(con,req)
   print(i/nrow(weather))
