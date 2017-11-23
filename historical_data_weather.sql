@@ -34,9 +34,9 @@ rain_today	= case
  when CONVERT(rain_today,DECIMAL(9,3)) =0 then NULL 
  else CONVERT(rain_today,DECIMAL(9,3))
  end ,
-seal_level = case
- when CONVERT(seal_level,DECIMAL(9,3)) =0 then NULL 
- else CONVERT(seal_level,DECIMAL(9,3))
+sea_level = case
+ when CONVERT(sea_level,DECIMAL(9,3)) =0 then NULL 
+ else CONVERT(sea_level,DECIMAL(9,3))
  end ,
  grnd_level = case
  when CONVERT(grnd_level,DECIMAL(9,3)) =0 then NULL 
