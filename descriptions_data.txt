@@ -1,1 +1,83 @@
+Описание всех данныех документация.
+historical_data_weather - History Bulk (Исторические данные по погоде)
+SELECT `historical_data_weather`.`dt`,
+    `historical_data_weather`.`dt_iso`,
+    `historical_data_weather`.`city_id`,
+    `historical_data_weather`.`city_name`,
+    `historical_data_weather`.`lat`,
+    `historical_data_weather`.`lon`,
+    `historical_data_weather`.`temp`,
+    `historical_data_weather`.`temp_min`,
+    `historical_data_weather`.`temp_max`,
+    `historical_data_weather`.`pressure`,
+    `historical_data_weather`.`sea_level`,
+    `historical_data_weather`.`grnd_level`,
+    `historical_data_weather`.`humidity`,
+    `historical_data_weather`.`wind_speed`,
+    `historical_data_weather`.`wind_deg`,
+    `historical_data_weather`.`rain_1h`,
+    `historical_data_weather`.`rain_3h`,
+    `historical_data_weather`.`rain_24h`,
+    `historical_data_weather`.`rain_today`,
+    `historical_data_weather`.`snow_1h`,
+    `historical_data_weather`.`snow_3h`,
+    `historical_data_weather`.`snow_24h`,
+    `historical_data_weather`.`snow_today`,
+    `historical_data_weather`.`clouds_all`,
+    `historical_data_weather`.`weather_id`,
+    `historical_data_weather`.`weather_main`,
+    `historical_data_weather`.`weather_description`,
+    `historical_data_weather`.`weather_icon`,
+    `historical_data_weather`.`dt_iso_2`,
+    `historical_data_weather`.`id`
+FROM `energo`.`historical_data_weather`;
+
+weather - 5 day / 3 hour forecast data (Прогноз погоды на 5 дней в разбивке по 3 часа)
+SELECT `weather`.`date`,
+    `weather`.`hour`,
+    `weather`.`city_id`,
+    `weather`.`temp`,
+    `weather`.`temp_min`,
+    `weather`.`temp_max`,
+    `weather`.`pressure`,
+    `weather`.`sea_level`,
+    `weather`.`grnd_level`,
+    `weather`.`humidity`,
+    `weather`.`temp_kf`,
+    `weather`.`weather_id`,
+    `weather`.`main`,
+    `weather`.`description`,
+    `weather`.`icon`,
+    `weather`.`alll`,
+    `weather`.`speed`,
+    `weather`.`deg`,
+    `weather`.`rain`,
+    `weather`.`snow`,
+    `weather`.`pod`,
+    `weather`.`id`
+FROM `energo`.`weather`;
+---
+UNION historical_data_weather - weather
+DATE(dt_iso_2) = date
+HOUR(dt_iso_2) = hour
+city_id = city_id
+temp = temp
+temp_min = temp_min
+temp_max = temp_max
+pressure = pressure
+sea_level = sea_level
+grnd_level = grnd_level
+humidity = humidity
+NA = temp_kf
+weather_id = weather_id
+weather_main = main
+weather_description = description
+weather_icon = icon
+clouds_all = alll
+wind_speed = speed
+wind_deg = deg
+rain_3h=rain
+snow_3h=snow
+
+
 
