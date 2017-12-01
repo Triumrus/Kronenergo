@@ -1,4 +1,5 @@
 #Преобразование столбцов из текста в DECIMAL . Для данных из History Bulk
+#все пропуски заменяет на NULL
 SET SQL_SAFE_UPDATES = 0;
 SET SESSION sql_mode = '';
 update energo.historical_data_weather set
