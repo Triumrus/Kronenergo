@@ -186,30 +186,30 @@ Haze= as.numeric(weather_main=="Haze")
  
  data[,`:=`(
       
-      'broken clouds' = as.numeric(weather_description=="broken clouds"),
+      'broken_clouds' = as.numeric(weather_description=="broken clouds"),
       'drizzle' = as.numeric(weather_description=="drizzle"),
-      'few clouds' = as.numeric(weather_description=="few clouds"),
+      'few_clouds' = as.numeric(weather_description=="few clouds"),
       'fog' = as.numeric(weather_description=="fog"),
       'haze' = as.numeric(weather_description=="haze"),
-      'heavy intensity drizzle' = as.numeric(weather_description=="heavy intensity drizzle"),
-      'heavy intensity rain' = as.numeric(weather_description=="heavy intensity rain"),
-      'heavy intensity rain and drizzle' = as.numeric(weather_description=="heavy intensity rain and drizzle"),
-      'heavy snow' = as.numeric(weather_description=="heavy snow"),
-      'light intensity drizzle' = as.numeric(weather_description=="light intensity drizzle"),
-      'light intensity drizzle rain' = as.numeric(weather_description=="light intensity drizzle rain"),
-      'light rain' = as.numeric(weather_description=="light rain"),
-      'light rain and snow' = as.numeric(weather_description=="light rain and snow"),
+      'heavy_intensity_drizzle' = as.numeric(weather_description=="heavy intensity drizzle"),
+      'heavy_intensity_rain' = as.numeric(weather_description=="heavy intensity rain"),
+      'heavy_intensity_rain_and_drizzle' = as.numeric(weather_description=="heavy intensity rain and drizzle"),
+      'heavy_snow' = as.numeric(weather_description=="heavy snow"),
+      'light_intensity_drizzle' = as.numeric(weather_description=="light intensity drizzle"),
+      'light_intensity_drizzle_rain' = as.numeric(weather_description=="light intensity drizzle rain"),
+      'light_rain' = as.numeric(weather_description=="light rain"),
+      'light_rain_and_snow' = as.numeric(weather_description=="light rain and snow"),
       'mist' = as.numeric(weather_description=="mist"),
-      'moderate rain' = as.numeric(weather_description=="moderate rain"),
-      'overcast clouds' = as.numeric(weather_description=="overcast clouds"),
-      'proximity thunderstorm' = as.numeric(weather_description=="proximity thunderstorm"),
-      'scattered clouds' = as.numeric(weather_description=="scattered clouds"),
-      'sky is clear' = as.numeric(weather_description=="sky is clear"),
+      'moderate_rain' = as.numeric(weather_description=="moderate rain"),
+      'overcast_clouds' = as.numeric(weather_description=="overcast clouds"),
+      'proximity_thunderstorm' = as.numeric(weather_description=="proximity thunderstorm"),
+      'scattered_clouds' = as.numeric(weather_description=="scattered clouds"),
+      'sky_is_clear' = as.numeric(weather_description=="sky is clear"),
       'thunderstorm' = as.numeric(weather_description=="thunderstorm"),
-      'thunderstorm with heavy rain' = as.numeric(weather_description=="thunderstorm with heavy rain"),
-      'thunderstorm with light rain' = as.numeric(weather_description=="thunderstorm with light rain"),
-      'thunderstorm with rain' = as.numeric(weather_description=="thunderstorm with rain"),
-      'very heavy rain' = as.numeric(weather_description=="very heavy rain")
+      'thunderstorm_with_heavy_rain' = as.numeric(weather_description=="thunderstorm with heavy rain"),
+      'thunderstorm_with_light_rain' = as.numeric(weather_description=="thunderstorm with light rain"),
+      'thunderstorm_with_rain' = as.numeric(weather_description=="thunderstorm with rain"),
+      'very_heavy_rain' = as.numeric(weather_description=="very heavy rain")
       
 
  )]
@@ -359,6 +359,7 @@ order by 1,2"
    day_31= as.numeric(as.numeric(format(DATE_FACT,"%d"))==31)
  )]
  
+ DATE_FACT<- data$DATE_FACT
  data$DATE_FACT <- NULL
  
  
@@ -381,6 +382,8 @@ lag <- 24*7
 anscols = paste("lag", 24:lag, sep="_")
 cols <- "FACT"
 data[,(anscols):=shift(.SD, 24:lag, 0, "lag"),.SDcols=cols][]
+data<- copy(data[(lag+1):nrow(data),])
+
 
 
 get_pca2 <- function(test_data,name){
@@ -400,7 +403,7 @@ transform_x = function(data)
   
   x_data = data[,2]
   y_data = data[,1]
-  lambdas = round(seq(-5, 5, 0.1),1)
+  lambdas = round(seq(-5, 5, 0.1)[-61],1)
   corrs = sapply(lambdas, 
                  function(lambd) cor(do_transform(x_data, lambd), y_data))
   lambda = lambdas[which.max(abs(corrs))]
@@ -419,6 +422,13 @@ for(i in 2:(nc)) {print(i)
   names(data)[ncol(data)] <- paste0(names(data)[i],"_",transform_x(subset(data,select = c(1,i))))
 }
 
+data<-copy(data[,round(.SD,4)])
+
+del_name<- data[,lapply(.SD,function(x){length(unique(x))>1})]
+data<- data[,which(t(del_name)),with=F]
 
 write(names(data),"names.txt")
 fwrite(data,"data.csv")
+
+
+
