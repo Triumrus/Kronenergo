@@ -425,7 +425,7 @@ for(i in 2:(nc)) {print(i)
 
 data<-copy(data[,round(.SD,4)])
 
-del_name<- data[,lapply(.SD,function(x){length(unique(x))>1}),]
+del_name<- data[,lapply(.SD,function(x){length(unique(x))>1})]
 data<- data[,which(t(del_name)),with=F]
 names(data)
 write(names(data),"names.txt")
