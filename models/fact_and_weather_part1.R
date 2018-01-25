@@ -396,6 +396,7 @@ get_pca2 <- function(test_data,name){
 
 data<- get_pca2(data,"FACT")
 
+
 transform_x = function(data)
 {
   do_transform = function(x, lambd) {
@@ -419,14 +420,14 @@ for(i in 2:(nc)) {print(i)
   if(all(data[,i,with = F]==0)==T){next}
   data <- cbind(data,subset(data,select = i)^transform_x(subset(data,select = c(1,i)))
   )
-  names(data)[ncol(data)] <- paste0(names(data)[i],"_",transform_x(subset(data,select = c(1,i))))
+  names(data)[ncol(data)] <- paste0(names(data)[i],"^",transform_x(subset(data,select = c(1,i))))
 }
 
 data<-copy(data[,round(.SD,4)])
 
-del_name<- data[,lapply(.SD,function(x){length(unique(x))>1})]
+del_name<- data[,lapply(.SD,function(x){length(unique(x))>1}),]
 data<- data[,which(t(del_name)),with=F]
-
+names(data)
 write(names(data),"names.txt")
 fwrite(data,"data.csv")
 
