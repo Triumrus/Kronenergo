@@ -99,16 +99,19 @@ weather$pod<- as.character(weather$pod)
 weather$main<- as.character(weather$main)
 weather$description<- as.character(weather$description)
 weather$icon<- as.character(weather$icon)
-
+weather$date_zaliva <- as.character(Sys.Date())
 
 for(i in 1:nrow(weather)){
   req <- paste("INSERT INTO weather (date, hour, city_id,temp,temp_min, temp_max, pressure, sea_level,
-grnd_level, humidity, temp_kf,weather_id, main, description, icon, alll, speed, deg, rain,snow,pod
+grnd_level, humidity, temp_kf,weather_id, main, description, icon, alll, speed, deg, rain,snow,pod,date_zaliva
   ) VALUES
                ('",weather[i,1],"',",weather[i,2],",",weather[i,3],",",weather[i,4],",",weather[i,5],","
                ,weather[i,6],",",weather[i,7],",",weather[i,8],",",weather[i,9],",",weather[i,10],","
                ,weather[i,11],",",weather[i,12],",'",weather[i,13],"','",weather[i,14],"','",weather[i,15],"',"
-               ,weather[i,16],",",weather[i,17],",",weather[i,18],",",ifelse(is.na(weather[i,19]),"NULL",weather[i,19]),",",ifelse(is.na(weather[i,20]),"NULL",weather[i,20]),",'",weather[i,21],"')",sep = "")
+               ,weather[i,16],",",weather[i,17],",",weather[i,18],","
+               ,ifelse(is.na(weather[i,19]),"NULL",weather[i,19]),","
+               ,ifelse(is.na(weather[i,20]),"NULL",weather[i,20]),",'",weather[i,21],"','",weather[i,22],"')"
+               ,sep = "")
   # not run, but do to send your query 
   dbSendUpdate(con,req)
   print(i/nrow(weather))
