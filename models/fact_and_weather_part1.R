@@ -14,8 +14,6 @@ zapros <- "select  a.DATE as DATE_FACT,a.HOUR as HOUR_FACT,a.FACT
 ,w.HOUR
 ,w.dt
 ,dt_iso
-,city_id
-,city_name
 ,lat
 ,lon
 ,temp
@@ -52,8 +50,6 @@ on a.id=b.id
 
 left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,we.dt
 ,dt_iso
-,city_id
-,city_name
 ,lat
 ,lon
 ,temp
