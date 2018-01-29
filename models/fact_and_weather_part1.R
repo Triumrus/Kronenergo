@@ -48,7 +48,7 @@ SELECT max(id) as id FROM energo.fact_energoeffect
 group by DATE,HOUR) b
 on a.id=b.id
 
-left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,we.dt
+left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,city_id,we.dt
 ,dt_iso
 ,lat
 ,lon
@@ -95,7 +95,9 @@ join (select @quot= -2 ) r2
 
 order by dt_iso_2
 ) w
-on a.DATE=w.DATE and a.HOUR = 
+on a.DATE=w.DATE 
+and a.CITY_ID = w.city_id
+and a.HOUR = 
 case 
 when a.HOUR = w.HOUR then  w.HOUR
 when a.HOUR != w.HOUR and a.HOUR != w.curr_quote then  w.curr_quote2
