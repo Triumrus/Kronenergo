@@ -248,3 +248,4 @@ train$pred_clf5<- predict(clf4,data.matrix(train),ntreelimit = clf5$best_iterati
 cor(cbind(testlabel,test$pred_y,test$pred_y_rrf,test$pred_clf3,test$ridge,test$pred_clf4,test$pred_clf5))[,1]^2
 cor(cbind(testlabel,test$pred_y,test$pred_y_rrf,test$pred_clf3,test$pred_clf4,test$pred_clf5))[,1]^2
 cor(cbind(trainLabel,train$pred_y,train$pred_y_rrf,train$pred_clf3,train$pred_clf4,train$pred_clf5))[,1]^2
+
