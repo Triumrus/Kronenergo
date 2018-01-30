@@ -1,14 +1,14 @@
 select  
-a.DATE as DATE_FACT,
-a.HOUR as HOUR_FACT,
-a.FACT
-,a.id
-,w.DATE
-,w.HOUR
-,w.dt
-,dt_iso
-,lat
-,lon
+a.DATE 
+,a.HOUR 
+,a.FACT
+#,a.id
+#,w.DATE
+#,w.HOUR
+#,w.dt
+#,dt_iso
+#,lat
+#,lon
 ,temp
 ,temp_min
 ,temp_max
@@ -16,24 +16,27 @@ a.FACT
 ,sea_level
 ,grnd_level
 ,humidity
-,wind_speed
-,wind_deg
-,rain_1h
-,rain_3h
-,rain_24h
-,rain_today
-,snow_1h
-,snow_3h
-,snow_24h
-,snow_today
-,clouds_all
+,wind_speed as speed
+,wind_deg as des
+#,rain_1h
+,rain_3h as rain
+#,rain_24h
+#,rain_today
+#,snow_1h
+,snow_3h as snow
+#,snow_24h
+#,snow_today
+,clouds_all as alll
 ,weather_id
-,weather_main
-,weather_description
-,weather_icon
-,dt_iso_2
-,w.id  
-,f.day_dt
+,weather_main as main
+,weather_description as description
+,weather_icon as icon
+,a.CITY_ID
+,a.ID_GTP
+,a.ID_COMPANY
+#,dt_iso_2
+#,w.id  
+#,f.day_dt
 FROM energo.fact_energoeffect a
 
 inner join (
