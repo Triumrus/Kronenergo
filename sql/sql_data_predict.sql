@@ -1,4 +1,3 @@
-CREATE VIEW `new_view` AS
 select 
 a.date
 ,a.HOUR
@@ -18,7 +17,9 @@ a.date
 ,speed
 ,deg
 ,rain
-
+,a.CITY_ID
+,a.ID_GTP
+,a.ID_COMPANY
 from (
 select ID,DATE(DATE) AS DATE,HOUR,FACT,ID_COMPANY,ID_GTP,CITY_ID from energo.fact_energoeffect 
 union 
