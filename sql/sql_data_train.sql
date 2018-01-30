@@ -2,13 +2,6 @@ select
 a.DATE 
 ,a.HOUR 
 ,a.FACT
-#,a.id
-#,w.DATE
-#,w.HOUR
-#,w.dt
-#,dt_iso
-#,lat
-#,lon
 ,temp
 ,temp_min
 ,temp_max
@@ -17,15 +10,9 @@ a.DATE
 ,grnd_level
 ,humidity
 ,wind_speed as speed
-,wind_deg as des
-#,rain_1h
+,wind_deg as deg
 ,rain_3h as rain
-#,rain_24h
-#,rain_today
-#,snow_1h
 ,snow_3h as snow
-#,snow_24h
-#,snow_today
 ,clouds_all as alll
 ,weather_id
 ,weather_main as main
@@ -34,9 +21,6 @@ a.DATE
 ,a.CITY_ID
 ,a.ID_GTP
 ,a.ID_COMPANY
-#,dt_iso_2
-#,w.id  
-#,f.day_dt
 FROM energo.fact_energoeffect a
 
 inner join (
