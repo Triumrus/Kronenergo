@@ -1,7 +1,6 @@
 CREATE VIEW `new_view` AS
 select 
 a.date
-,a.hour
 ,a.HOUR
 ,FACT
 ,temp
