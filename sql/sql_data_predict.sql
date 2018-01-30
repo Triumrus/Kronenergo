@@ -1,3 +1,4 @@
+CREATE VIEW `new_view` AS
 select 
 a.date
 ,a.hour
@@ -7,7 +8,7 @@ a.date
 ,temp_min
 ,temp_max
 ,pressure
-sea_level
+,sea_level
 ,grnd_level
 ,humidity
 ,weather_id
@@ -32,3 +33,4 @@ left join energo.weather b
 on a.DATE = b.DATE
 and a.HOUR = b.HOUR
 and a.CITY_ID = b.city_id
+where a.date >= date_add(DATE(sysdate()),interval -7 day)
