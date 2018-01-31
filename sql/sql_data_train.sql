@@ -21,6 +21,7 @@ a.DATE
 ,a.CITY_ID
 ,a.ID_GTP
 ,a.ID_COMPANY
+,f.day_dt
 FROM energo.fact_energoeffect a
 
 inner join (
