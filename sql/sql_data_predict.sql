@@ -9,17 +9,19 @@ a.date
 ,sea_level
 ,grnd_level
 ,humidity
+,speed
+,deg
+,rain
+,snow
+,alll
 ,weather_id
 ,main
 ,description
 ,icon
-,alll
-,speed
-,deg
-,rain
 ,a.CITY_ID
 ,a.ID_GTP
 ,a.ID_COMPANY
+,f.day_dt
 from (
 select ID,DATE(DATE) AS DATE,HOUR,FACT,ID_COMPANY,ID_GTP,CITY_ID from energo.fact_energoeffect 
 union 
@@ -29,6 +31,8 @@ order by DATE(DATE) desc ,HOUR
 limit 24
 )
 )a
+left join energo.factory_calendar f
+on DATE(a.date) = f.dt
 left join energo.weather b
 on a.DATE = b.DATE
 and a.HOUR = b.HOUR
