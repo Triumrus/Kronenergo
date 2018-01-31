@@ -1,5 +1,5 @@
 select 
-a.date
+a.DATE
 ,a.HOUR
 ,FACT
 ,temp
