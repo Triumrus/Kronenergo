@@ -8,14 +8,12 @@ drv <- JDBC("com.mysql.jdbc.Driver",
             "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
 
 con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
-zapros <- "select  a.DATE as DATE_FACT,a.HOUR as HOUR_FACT,a.FACT
-,a.id
-,w.DATE
-,w.HOUR
-,w.dt
-,dt_iso
-,lat
-,lon
+zapros <- 
+"
+select  
+a.DATE 
+,a.HOUR 
+,a.FACT
 ,temp
 ,temp_min
 ,temp_max
@@ -23,23 +21,18 @@ zapros <- "select  a.DATE as DATE_FACT,a.HOUR as HOUR_FACT,a.FACT
 ,sea_level
 ,grnd_level
 ,humidity
-,wind_speed
-,wind_deg
-,rain_1h
-,rain_3h
-,rain_24h
-,rain_today
-,snow_1h
-,snow_3h
-,snow_24h
-,snow_today
-,clouds_all
+,wind_speed as speed
+,wind_deg as deg
+,rain_3h as rain
+,snow_3h as snow
+,clouds_all as alll
 ,weather_id
-,weather_main
-,weather_description
-,weather_icon
-,dt_iso_2
-,w.id  
+,weather_main as main
+,weather_description as description
+,weather_icon as icon
+,a.CITY_ID
+,a.ID_GTP
+,a.ID_COMPANY
 ,f.day_dt
 FROM energo.fact_energoeffect a
 
@@ -48,7 +41,7 @@ SELECT max(id) as id FROM energo.fact_energoeffect
 group by DATE,HOUR) b
 on a.id=b.id
 
-left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,city_id,we.dt
+left join (SELECT DATE(dt_iso_2 + interval TIMEZONE_TO_UTC HOUR) as DATE,HOUR(dt_iso_2 + interval TIMEZONE_TO_UTC HOUR) as HOUR,we.city_id,we.dt
 ,dt_iso
 ,lat
 ,lon
@@ -75,11 +68,12 @@ left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,city_id,we.dt
 ,weather_description
 ,weather_icon
 ,dt_iso_2
-,id  
+,we.id  
 ,@quot as lag_quot
 ,@quot:=(HOUR(dt_iso_2)+1) curr_quote
 ,@quot2 as lag_quot2
 ,@quot2:=(HOUR(dt_iso_2)+2) curr_quote2
+
 FROM  (
 select a.* 
 from energo.historical_data_weather a
@@ -92,8 +86,10 @@ on a.id=b.id
 ) we
 join (select @quot= -1 ) r
 join (select @quot= -2 ) r2
-
+left join energo.clients_gtp_time ti
+on we.CITY_ID = ti.CITY_ID
 order by dt_iso_2
+
 ) w
 on a.DATE=w.DATE 
 and a.CITY_ID = w.city_id
@@ -104,36 +100,42 @@ when a.HOUR != w.HOUR and a.HOUR != w.curr_quote then  w.curr_quote2
 when a.HOUR != w.HOUR  then  w.curr_quote
 end  
 left join factory_calendar f
-on a.DATE = f.dt "
+on a.DATE = f.dt
+where ID_COMPANY = 1
+and ID_GTP =1
+"
 data<- dbGetQuery(con, zapros)
 dbDisconnect(con)
 
 data <- as.data.table(data)
 # md.pattern(data)
-data[,.(.N),by=.(DATE_FACT,HOUR_FACT)][N>1]
-data[,`:=`(N=.N),by=.(DATE_FACT,HOUR_FACT)]
-data<- data[,tail(.SD,1),by=.(DATE_FACT,HOUR_FACT)]
+data[,.(.N),by=.(DATE,HOUR)][N>1]
+data[,`:=`(N=.N),by=.(DATE,HOUR)]
+data<- data[,tail(.SD,1),by=.(DATE,HOUR)]
 
-data<- copy(data[,.(DATE_FACT,HOUR_FACT,FACT,temp,temp_min,temp_max,
-        pressure,sea_level,grnd_level,humidity,weather_id,
-        weather_main,weather_description,weather_icon,clouds_all,
-        wind_speed,wind_deg,rain_3h,snow_3h,day_dt
+data<- copy(data[,.(DATE,HOUR,FACT,temp,temp_min,temp_max,
+        pressure,sea_level,grnd_level,humidity,speed,deg,rain,
+        snow,alll,weather_id,main,description,icon,day_dt
         )])
 
-data
-data$DATE_FACT <- as.Date(data$DATE_FACT,'%Y-%m-%d')
-data$weather_main <- as.factor(data$weather_main)
-data$weather_description <- as.factor(data$weather_description)
-data$weather_icon <- as.factor(data$weather_icon)
+
+data$DATE <- as.Date(data$DATE,'%Y-%m-%d')
+data$main <- as.factor(data$main)
+data$description <- as.factor(data$description)
+data$icon <- as.factor(data$icon)
 data$sea_level <- as.numeric(data$sea_level)
 data$grnd_level <- as.numeric(data$grnd_level)
-data$dayly<-as.factor(format(data$DATE_FACT,'%A'))
-data$month<-as.factor(format(data$DATE_FACT,'%B'))
+data$dayly<-as.factor(format(data$DATE,'%A'))
+data$month<-as.factor(format(data$DATE,'%B'))
 data$work<-ifelse(data$dayly == 'суббота',0,ifelse(data$dayly == 'воскресенье',0,1))
 
 for (i in which(is.na(data$temp))) {print(i)
 data[i,4:19] <- data[i-1,4:19]
 }
+
+for (i in 1:ncol(data)){
+print(data[,is.na(i),with=F])
+  }
 # from kelvin to Celsius
 data$temp <- data$temp - 273.15
 data$temp_min <- data$temp_min - 273.15
@@ -141,18 +143,18 @@ data$temp_max <- data$temp_max - 273.15
 
 
  data[,`:=`(
-Clouds = as.numeric(weather_main=="Clouds"),
-Clear = as.numeric(weather_main=="Clear"),
-Fog = as.numeric(weather_main=="Fog"),
-Mist = as.numeric(weather_main=="Mist"),
-Rain= as.numeric(weather_main=="Rain"),
-Drizzle= as.numeric(weather_main=="Drizzle"),
-Snow= as.numeric(weather_main=="Snow"),
-Thunderstorm= as.numeric(weather_main=="Thunderstorm"),
-Haze= as.numeric(weather_main=="Haze")
+Clouds = as.numeric(main=="Clouds"),
+Clear = as.numeric(main=="Clear"),
+Fog = as.numeric(main=="Fog"),
+Mist = as.numeric(main=="Mist"),
+Rain= as.numeric(main=="Rain"),
+Drizzle= as.numeric(main=="Drizzle"),
+Snow= as.numeric(main=="Snow"),
+Thunderstorm= as.numeric(main=="Thunderstorm"),
+Haze= as.numeric(main=="Haze")
 )
 ]
- data$weather_main <- NULL
+ data$main <- NULL
 
  data[,`:=`(
    cod_200 = as.numeric(weather_id==200),
@@ -184,61 +186,61 @@ Haze= as.numeric(weather_main=="Haze")
  
  data[,`:=`(
       
-      'broken_clouds' = as.numeric(weather_description=="broken clouds"),
-      'drizzle' = as.numeric(weather_description=="drizzle"),
-      'few_clouds' = as.numeric(weather_description=="few clouds"),
-      'fog' = as.numeric(weather_description=="fog"),
-      'haze' = as.numeric(weather_description=="haze"),
-      'heavy_intensity_drizzle' = as.numeric(weather_description=="heavy intensity drizzle"),
-      'heavy_intensity_rain' = as.numeric(weather_description=="heavy intensity rain"),
-      'heavy_intensity_rain_and_drizzle' = as.numeric(weather_description=="heavy intensity rain and drizzle"),
-      'heavy_snow' = as.numeric(weather_description=="heavy snow"),
-      'light_intensity_drizzle' = as.numeric(weather_description=="light intensity drizzle"),
-      'light_intensity_drizzle_rain' = as.numeric(weather_description=="light intensity drizzle rain"),
-      'light_rain' = as.numeric(weather_description=="light rain"),
-      'light_rain_and_snow' = as.numeric(weather_description=="light rain and snow"),
-      'mist' = as.numeric(weather_description=="mist"),
-      'moderate_rain' = as.numeric(weather_description=="moderate rain"),
-      'overcast_clouds' = as.numeric(weather_description=="overcast clouds"),
-      'proximity_thunderstorm' = as.numeric(weather_description=="proximity thunderstorm"),
-      'scattered_clouds' = as.numeric(weather_description=="scattered clouds"),
-      'sky_is_clear' = as.numeric(weather_description=="sky is clear"),
-      'thunderstorm' = as.numeric(weather_description=="thunderstorm"),
-      'thunderstorm_with_heavy_rain' = as.numeric(weather_description=="thunderstorm with heavy rain"),
-      'thunderstorm_with_light_rain' = as.numeric(weather_description=="thunderstorm with light rain"),
-      'thunderstorm_with_rain' = as.numeric(weather_description=="thunderstorm with rain"),
-      'very_heavy_rain' = as.numeric(weather_description=="very heavy rain")
+      'broken_clouds' = as.numeric(description=="broken clouds"),
+      'drizzle' = as.numeric(description=="drizzle"),
+      'few_clouds' = as.numeric(description=="few clouds"),
+      'fog' = as.numeric(description=="fog"),
+      'haze' = as.numeric(description=="haze"),
+      'heavy_intensity_drizzle' = as.numeric(description=="heavy intensity drizzle"),
+      'heavy_intensity_rain' = as.numeric(description=="heavy intensity rain"),
+      'heavy_intensity_rain_and_drizzle' = as.numeric(description=="heavy intensity rain and drizzle"),
+      'heavy_snow' = as.numeric(description=="heavy snow"),
+      'light_intensity_drizzle' = as.numeric(description=="light intensity drizzle"),
+      'light_intensity_drizzle_rain' = as.numeric(description=="light intensity drizzle rain"),
+      'light_rain' = as.numeric(description=="light rain"),
+      'light_rain_and_snow' = as.numeric(description=="light rain and snow"),
+      'mist' = as.numeric(description=="mist"),
+      'moderate_rain' = as.numeric(description=="moderate rain"),
+      'overcast_clouds' = as.numeric(description=="overcast clouds"),
+      'proximity_thunderstorm' = as.numeric(description=="proximity thunderstorm"),
+      'scattered_clouds' = as.numeric(description=="scattered clouds"),
+      'sky_is_clear' = as.numeric(description=="sky is clear"),
+      'thunderstorm' = as.numeric(description=="thunderstorm"),
+      'thunderstorm_with_heavy_rain' = as.numeric(description=="thunderstorm with heavy rain"),
+      'thunderstorm_with_light_rain' = as.numeric(description=="thunderstorm with light rain"),
+      'thunderstorm_with_rain' = as.numeric(description=="thunderstorm with rain"),
+      'very_heavy_rain' = as.numeric(description=="very heavy rain")
       
 
  )]
  
- data$weather_description <- NULL
+ data$description <- NULL
  
  data[,`:=`(
- i01d =  as.numeric(weather_icon=="01d"),
- i01n =  as.numeric(weather_icon=="01n"),
- i02 =  as.numeric(weather_icon=="02"),
- i02d =  as.numeric(weather_icon=="02d"),
- i02n =  as.numeric(weather_icon=="02n"),
- i03 =  as.numeric(weather_icon=="03"),
- i03d =  as.numeric(weather_icon=="03d"),
- i03n =  as.numeric(weather_icon=="03n"),
- i04 =  as.numeric(weather_icon=="04"),
- i04d =  as.numeric(weather_icon=="04d"),
- i04n =  as.numeric(weather_icon=="04n"),
- i09d =  as.numeric(weather_icon=="09d"),
- i09n =  as.numeric(weather_icon=="09n"),
- i10d =  as.numeric(weather_icon=="10d"),
- i10n =  as.numeric(weather_icon=="10n"),
- i11d =  as.numeric(weather_icon=="11d"),
- i11n =  as.numeric(weather_icon=="11n"),
- i13d =  as.numeric(weather_icon=="13d"),
- i13n =  as.numeric(weather_icon=="13n"),
- i50d =  as.numeric(weather_icon=="50d"),
- i50n =  as.numeric(weather_icon=="50n")
+ i01d =  as.numeric(icon=="01d"),
+ i01n =  as.numeric(icon=="01n"),
+ i02 =  as.numeric(icon=="02"),
+ i02d =  as.numeric(icon=="02d"),
+ i02n =  as.numeric(icon=="02n"),
+ i03 =  as.numeric(icon=="03"),
+ i03d =  as.numeric(icon=="03d"),
+ i03n =  as.numeric(icon=="03n"),
+ i04 =  as.numeric(icon=="04"),
+ i04d =  as.numeric(icon=="04d"),
+ i04n =  as.numeric(icon=="04n"),
+ i09d =  as.numeric(icon=="09d"),
+ i09n =  as.numeric(icon=="09n"),
+ i10d =  as.numeric(icon=="10d"),
+ i10n =  as.numeric(icon=="10n"),
+ i11d =  as.numeric(icon=="11d"),
+ i11n =  as.numeric(icon=="11n"),
+ i13d =  as.numeric(icon=="13d"),
+ i13n =  as.numeric(icon=="13n"),
+ i50d =  as.numeric(icon=="50d"),
+ i50n =  as.numeric(icon=="50n")
  )]
  
- data$weather_icon <- NULL
+ data$icon <- NULL
  
  data[,`:=`(
    Monday= as.numeric(dayly=="понедельник"),
@@ -269,32 +271,32 @@ Haze= as.numeric(weather_main=="Haze")
  
  data$month <- NULL
  
- data$HOUR_FACT_0<-ifelse(test = data$HOUR_FACT==1,yes = 1,no = 0)
- data$HOUR_FACT_1<-ifelse(test = data$HOUR_FACT==2,yes = 1,no = 0)
- data$HOUR_FACT_2<-ifelse(test = data$HOUR_FACT==3,yes = 1,no = 0)
- data$HOUR_FACT_3<-ifelse(test = data$HOUR_FACT==4,yes = 1,no = 0)
- data$HOUR_FACT_4<-ifelse(test = data$HOUR_FACT==5,yes = 1,no = 0)
- data$HOUR_FACT_5<-ifelse(test = data$HOUR_FACT==6,yes = 1,no = 0)
- data$HOUR_FACT_6<-ifelse(test = data$HOUR_FACT==7,yes = 1,no = 0)
- data$HOUR_FACT_7<-ifelse(test = data$HOUR_FACT==8,yes = 1,no = 0)
- data$HOUR_FACT_8<-ifelse(test = data$HOUR_FACT==9,yes = 1,no = 0)
- data$HOUR_FACT_9<-ifelse(test = data$HOUR_FACT==10,yes = 1,no = 0)
- data$HOUR_FACT_10<-ifelse(test = data$HOUR_FACT==11,yes = 1,no = 0)
- data$HOUR_FACT_11<-ifelse(test = data$HOUR_FACT==12,yes = 1,no = 0)
- data$HOUR_FACT_12<-ifelse(test = data$HOUR_FACT==13,yes = 1,no = 0)
- data$HOUR_FACT_13<-ifelse(test = data$HOUR_FACT==14,yes = 1,no = 0)
- data$HOUR_FACT_14<-ifelse(test = data$HOUR_FACT==15,yes = 1,no = 0)
- data$HOUR_FACT_15<-ifelse(test = data$HOUR_FACT==16,yes = 1,no = 0)
- data$HOUR_FACT_16<-ifelse(test = data$HOUR_FACT==17,yes = 1,no = 0)
- data$HOUR_FACT_17<-ifelse(test = data$HOUR_FACT==18,yes = 1,no = 0)
- data$HOUR_FACT_18<-ifelse(test = data$HOUR_FACT==19,yes = 1,no = 0)
- data$HOUR_FACT_19<-ifelse(test = data$HOUR_FACT==20,yes = 1,no = 0)
- data$HOUR_FACT_20<-ifelse(test = data$HOUR_FACT==21,yes = 1,no = 0)
- data$HOUR_FACT_21<-ifelse(test = data$HOUR_FACT==22,yes = 1,no = 0)
- data$HOUR_FACT_22<-ifelse(test = data$HOUR_FACT==23,yes = 1,no = 0)
- data$HOUR_FACT_23<-ifelse(test = data$HOUR_FACT==24,yes = 1,no = 0)
+ data$HOUR_0<-ifelse(test = data$HOUR==0,yes = 1,no = 0)
+ data$HOUR_1<-ifelse(test = data$HOUR==1,yes = 1,no = 0)
+ data$HOUR_2<-ifelse(test = data$HOUR==2,yes = 1,no = 0)
+ data$HOUR_3<-ifelse(test = data$HOUR==3,yes = 1,no = 0)
+ data$HOUR_4<-ifelse(test = data$HOUR==4,yes = 1,no = 0)
+ data$HOUR_5<-ifelse(test = data$HOUR==5,yes = 1,no = 0)
+ data$HOUR_6<-ifelse(test = data$HOUR==6,yes = 1,no = 0)
+ data$HOUR_7<-ifelse(test = data$HOUR==7,yes = 1,no = 0)
+ data$HOUR_8<-ifelse(test = data$HOUR==8,yes = 1,no = 0)
+ data$HOUR_9<-ifelse(test = data$HOUR==9,yes = 1,no = 0)
+ data$HOUR_10<-ifelse(test = data$HOUR==10,yes = 1,no = 0)
+ data$HOUR_11<-ifelse(test = data$HOUR==11,yes = 1,no = 0)
+ data$HOUR_12<-ifelse(test = data$HOUR==12,yes = 1,no = 0)
+ data$HOUR_13<-ifelse(test = data$HOUR==13,yes = 1,no = 0)
+ data$HOUR_14<-ifelse(test = data$HOUR==14,yes = 1,no = 0)
+ data$HOUR_15<-ifelse(test = data$HOUR==15,yes = 1,no = 0)
+ data$HOUR_16<-ifelse(test = data$HOUR==16,yes = 1,no = 0)
+ data$HOUR_17<-ifelse(test = data$HOUR==17,yes = 1,no = 0)
+ data$HOUR_18<-ifelse(test = data$HOUR==18,yes = 1,no = 0)
+ data$HOUR_19<-ifelse(test = data$HOUR==19,yes = 1,no = 0)
+ data$HOUR_20<-ifelse(test = data$HOUR==20,yes = 1,no = 0)
+ data$HOUR_21<-ifelse(test = data$HOUR==21,yes = 1,no = 0)
+ data$HOUR_22<-ifelse(test = data$HOUR==22,yes = 1,no = 0)
+ data$HOUR_23<-ifelse(test = data$HOUR==23,yes = 1,no = 0)
  
- data$HOUR_FACT <- NULL
+ data$HOUR <- NULL
  
  
  
@@ -309,9 +311,9 @@ order by 1,2"
 
  
  data[,`:=`( 
-   year2=as.numeric(format(DATE_FACT,"%Y")),
-   mont2=as.numeric(format(DATE_FACT,"%m")),
-   day2=as.numeric(format(DATE_FACT,"%d"))
+   year2=as.numeric(format(DATE,"%Y")),
+   mont2=as.numeric(format(DATE,"%m")),
+   day2=as.numeric(format(DATE,"%d"))
  )]
  
  
@@ -324,41 +326,41 @@ order by 1,2"
 
 
  data[,`:=`(
-   day_1= as.numeric(as.numeric(format(DATE_FACT,"%d"))==1),
-   day_2= as.numeric(as.numeric(format(DATE_FACT,"%d"))==2),
-   day_3= as.numeric(as.numeric(format(DATE_FACT,"%d"))==3),
-   day_4= as.numeric(as.numeric(format(DATE_FACT,"%d"))==4),
-   day_5= as.numeric(as.numeric(format(DATE_FACT,"%d"))==5),
-   day_6= as.numeric(as.numeric(format(DATE_FACT,"%d"))==6),
-   day_7= as.numeric(as.numeric(format(DATE_FACT,"%d"))==7),
-   day_8= as.numeric(as.numeric(format(DATE_FACT,"%d"))==8),
-   day_9= as.numeric(as.numeric(format(DATE_FACT,"%d"))==9),
-   day_10= as.numeric(as.numeric(format(DATE_FACT,"%d"))==10),
-   day_11= as.numeric(as.numeric(format(DATE_FACT,"%d"))==11),
-   day_12= as.numeric(as.numeric(format(DATE_FACT,"%d"))==12),
-   day_13= as.numeric(as.numeric(format(DATE_FACT,"%d"))==13),
-   day_14= as.numeric(as.numeric(format(DATE_FACT,"%d"))==14),
-   day_15= as.numeric(as.numeric(format(DATE_FACT,"%d"))==15),
-   day_16= as.numeric(as.numeric(format(DATE_FACT,"%d"))==16),
-   day_17= as.numeric(as.numeric(format(DATE_FACT,"%d"))==17),
-   day_18= as.numeric(as.numeric(format(DATE_FACT,"%d"))==18),
-   day_19= as.numeric(as.numeric(format(DATE_FACT,"%d"))==19),
-   day_20= as.numeric(as.numeric(format(DATE_FACT,"%d"))==20),
-   day_21= as.numeric(as.numeric(format(DATE_FACT,"%d"))==21),
-   day_22= as.numeric(as.numeric(format(DATE_FACT,"%d"))==22),
-   day_23= as.numeric(as.numeric(format(DATE_FACT,"%d"))==23),
-   day_24= as.numeric(as.numeric(format(DATE_FACT,"%d"))==24),
-   day_25= as.numeric(as.numeric(format(DATE_FACT,"%d"))==25),
-   day_26= as.numeric(as.numeric(format(DATE_FACT,"%d"))==26),
-   day_27= as.numeric(as.numeric(format(DATE_FACT,"%d"))==27),
-   day_28= as.numeric(as.numeric(format(DATE_FACT,"%d"))==28),
-   day_29= as.numeric(as.numeric(format(DATE_FACT,"%d"))==29),
-   day_30= as.numeric(as.numeric(format(DATE_FACT,"%d"))==30),
-   day_31= as.numeric(as.numeric(format(DATE_FACT,"%d"))==31)
+   day_1= as.numeric(as.numeric(format(DATE,"%d"))==1),
+   day_2= as.numeric(as.numeric(format(DATE,"%d"))==2),
+   day_3= as.numeric(as.numeric(format(DATE,"%d"))==3),
+   day_4= as.numeric(as.numeric(format(DATE,"%d"))==4),
+   day_5= as.numeric(as.numeric(format(DATE,"%d"))==5),
+   day_6= as.numeric(as.numeric(format(DATE,"%d"))==6),
+   day_7= as.numeric(as.numeric(format(DATE,"%d"))==7),
+   day_8= as.numeric(as.numeric(format(DATE,"%d"))==8),
+   day_9= as.numeric(as.numeric(format(DATE,"%d"))==9),
+   day_10= as.numeric(as.numeric(format(DATE,"%d"))==10),
+   day_11= as.numeric(as.numeric(format(DATE,"%d"))==11),
+   day_12= as.numeric(as.numeric(format(DATE,"%d"))==12),
+   day_13= as.numeric(as.numeric(format(DATE,"%d"))==13),
+   day_14= as.numeric(as.numeric(format(DATE,"%d"))==14),
+   day_15= as.numeric(as.numeric(format(DATE,"%d"))==15),
+   day_16= as.numeric(as.numeric(format(DATE,"%d"))==16),
+   day_17= as.numeric(as.numeric(format(DATE,"%d"))==17),
+   day_18= as.numeric(as.numeric(format(DATE,"%d"))==18),
+   day_19= as.numeric(as.numeric(format(DATE,"%d"))==19),
+   day_20= as.numeric(as.numeric(format(DATE,"%d"))==20),
+   day_21= as.numeric(as.numeric(format(DATE,"%d"))==21),
+   day_22= as.numeric(as.numeric(format(DATE,"%d"))==22),
+   day_23= as.numeric(as.numeric(format(DATE,"%d"))==23),
+   day_24= as.numeric(as.numeric(format(DATE,"%d"))==24),
+   day_25= as.numeric(as.numeric(format(DATE,"%d"))==25),
+   day_26= as.numeric(as.numeric(format(DATE,"%d"))==26),
+   day_27= as.numeric(as.numeric(format(DATE,"%d"))==27),
+   day_28= as.numeric(as.numeric(format(DATE,"%d"))==28),
+   day_29= as.numeric(as.numeric(format(DATE,"%d"))==29),
+   day_30= as.numeric(as.numeric(format(DATE,"%d"))==30),
+   day_31= as.numeric(as.numeric(format(DATE,"%d"))==31)
  )]
  
- DATE_FACT<- data$DATE_FACT
- data$DATE_FACT <- NULL
+ DATE<- data$DATE
+ data$DATE <- NULL
  
  
  data[,`:=`(
@@ -377,10 +379,10 @@ f_dowle2(data)
 
 lag <- 24*7
 
-anscols = paste("lag", 24:lag, sep="_")
+anscols = paste("lag", 36:(36+lag), sep="_")
 cols <- "FACT"
-data[,(anscols):=shift(.SD, 24:lag, 0, "lag"),.SDcols=cols][]
-data<- copy(data[(lag+1):nrow(data),])
+data[,(anscols):=shift(.SD, 36:(36+lag), 0, "lag"),.SDcols=cols][]
+data<- copy(data[(lag+1+36):nrow(data),])
 
 
 
@@ -428,6 +430,3 @@ data<- data[,which(t(del_name)),with=F]
 names(data)
 write(names(data),"names.txt")
 fwrite(data,"data.csv")
-
-
-
