@@ -131,12 +131,19 @@ group by ID_COMPANY,ID_GTP,CITY_ID
 )a
 left join energo.factory_calendar f
 on DATE(a.date) = f.dt
-left join (select * FROM energo.weather a
+left join (
+
+select DATE(date + interval HOUR HOUR + interval TIMEZONE_TO_UTC HOUR) as DATE,
+HOUR(date + interval HOUR HOUR + interval TIMEZONE_TO_UTC HOUR) as HOUR,a.city_id,a.temp,a.temp_min,a.temp_max,a.pressure,
+a.sea_level,a.grnd_level,a.humidity,a.temp_kf,a.weather_id,a.main,a.description,a.icon,a.alll,a.speed,a.deg,a.rain,a.snow,a.pod,a.id FROM energo.weather a
 inner join (
 select MAX(ID) as ID2 FROM energo.weather
 group by date,hour
 ) b
-on a.ID = b.ID2) b
+on a.ID = b.ID2
+left join energo.clients_gtp_time c
+on a.city_id = c.CITY_ID
+) b
 on a.DATE = b.DATE
 and a.HOUR = b.HOUR
 and a.CITY_ID = b.city_id
