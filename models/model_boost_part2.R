@@ -199,7 +199,7 @@ cor(testlabel,test$pred_clf4)^2
 # plot(trainLabel,train$pred_clf4)
 save(clf4,file="clf4.rda")
 
-xgb.importance(names(train),clf2)
+xgb.importance(name[-1],clf2)
 cor(cbind(testlabel,test$pred_y,test$pred_y_rrf,test$pred_clf3,test$ridge,test$pred_clf4))[,1]^2
 
 # library(RRF)
