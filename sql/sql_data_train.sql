@@ -29,7 +29,7 @@ SELECT max(id) as id FROM energo.fact_energoeffect
 group by DATE,HOUR) b
 on a.id=b.id
 
-left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,city_id,we.dt
+left join (SELECT DATE(dt_iso_2 + interval TIMEZONE_TO_UTC HOUR) as DATE,HOUR(dt_iso_2 + interval TIMEZONE_TO_UTC HOUR) as HOUR,we.city_id,we.dt
 ,dt_iso
 ,lat
 ,lon
@@ -56,11 +56,12 @@ left join (SELECT DATE(dt_iso_2) as DATE,HOUR(dt_iso_2) as HOUR,city_id,we.dt
 ,weather_description
 ,weather_icon
 ,dt_iso_2
-,id  
+,we.id  
 ,@quot as lag_quot
 ,@quot:=(HOUR(dt_iso_2)+1) curr_quote
 ,@quot2 as lag_quot2
 ,@quot2:=(HOUR(dt_iso_2)+2) curr_quote2
+
 FROM  (
 select a.* 
 from energo.historical_data_weather a
@@ -73,8 +74,10 @@ on a.id=b.id
 ) we
 join (select @quot= -1 ) r
 join (select @quot= -2 ) r2
-
+left join energo.clients_gtp_time ti
+on we.CITY_ID = ti.CITY_ID
 order by dt_iso_2
+
 ) w
 on a.DATE=w.DATE 
 and a.CITY_ID = w.city_id
@@ -86,3 +89,5 @@ when a.HOUR != w.HOUR  then  w.curr_quote
 end  
 left join factory_calendar f
 on a.DATE = f.dt
+where ID_COMPANY = 1
+and ID_GTP =1
