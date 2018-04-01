@@ -1,0 +1,170 @@
+library(RCurl)
+library(jsonlite)
+library(data.table)
+# Sys.setenv(JAVA_HOME='C:\\Program Files\\Java\\jre-9.0.4')
+library(RJDBC)
+
+setwd("D:/Cronus/Virtual_machine/Base_MYSQL/API_current_weather")
+getwd()
+
+
+# ID всех городов
+#  all_city_id <- fromJSON("city.list.json")
+#  as.data.table(all_city_id)
+#  all_city_id$lon<- all_city_id$coord$lon
+#  all_city_id$lat<- all_city_id$coord$lat
+# all_city_id$coord <- NULL
+
+# API key
+key <- "bab64f8cbd90271f5da08e40a4f4e968"
+api_forecatby_id <- "api.openweathermap.org/data/2.5/weather?id="
+city_id <- "797062"
+
+# прогноз на 5 дней по 3 часа
+zapros <- paste0(api_forecatby_id,city_id,"&units=metric","&APPID=",key)  
+a<- fromJSON(getURL(zapros))
+ 
+
+
+# Информация о городе
+city<-c(a$id,a$name,a$coord$lon,a$coord$lat,a$sys$country)
+
+# Инфомарция о погоде главная часть
+# weather_main<- a$list$main
+weather_main<-as.data.table(t(unlist(a$main)))
+for(i in c("temp",
+           "temp_min",
+           "temp_max",
+           "pressure",
+           "sea_level",
+           "grnd_level",
+           "humidity",
+           "temp_kf" )){
+if(!i%in%names(weather_main)){
+  weather_main$V1 <- "NULL"
+  names(weather_main)[ncol(weather_main)] <- paste(i)
+}
+  }
+  
+
+
+# Инфомарция о погоде погодные условия
+weather_weather <- a$weather
+
+# Инфомарция о погоде облачность
+all <- a$clouds$all
+# names(weather_clouds) <- "all"
+
+
+
+# Инфомарция о погоде скорость ветра
+weather_wind <- unlist(a$wind)
+
+# Инфомарция о погоде возможные обьем осадков
+
+if (any(names(a)%in%"rain")) {
+  weather_rain<- a$rain
+  names(weather_rain) <- "rain"  
+} else {
+  weather_rain <- as.data.frame(rep("NULL",nrow(a$weather)))
+  names(weather_rain) <- "rain"
+  weather_rain$rain <- as.character(weather_rain$rain)
+}
+
+
+# Инфомарция о погоде возможные обьем осадков снега
+# list.rain.3h Rain volume for last 3 hours
+
+if (any(names(a)%in%"snow")) {
+  weather_snow<- a$snow
+  names(weather_snow) <- "snow"  
+} else {
+  weather_snow <- as.data.frame(rep("NULL",nrow(a$weather)))
+  names(weather_snow) <- "snow"
+  weather_snow$snow <- as.character(weather_snow$snow)
+}
+
+# НЕЗНАЮ
+if (any(names(a)%in%"pod")) {
+  weather_sys<- a$sys$pod
+  names(weather_sys) <- "pod"  
+} else {
+  weather_sys <- as.data.frame(rep("NULL",nrow(a$weather)))
+  names(weather_sys) <- "pod"
+  weather_sys$pod <- as.character(weather_sys$pod)
+}
+
+
+#Инфомарция о погоде Дата и час погоды
+weather_data<- data.frame(date=as.Date(format(as.POSIXct(a$dt, origin = "1970-01-01", tz = "UTC"),"%Y-%m-%d")),hour=as.character(format(as.POSIXct(a$dt, origin = "1970-01-01", tz = "UTC"),"%H")))
+
+weather<- as.data.table(cbind(weather_data,a$id
+                              ,weather_main,weather_weather
+                              ,all,t(weather_wind)
+                              ,weather_rain,weather_snow
+                              ,weather_sys))
+names(weather)[which(names(weather)%in%"a$id")] <- "a$city$id"
+weather$pod <- as.factor(weather$pod)
+weather$main <- as.factor(weather$main)
+weather$description <- as.factor(weather$description)
+weather$icon <- as.factor(weather$icon)
+names(weather) <- gsub("^id","weather_id",names(weather))
+names(weather)[3] <- "city_id"
+str(weather)
+weather$dt_iso <- as.character(as.POSIXlt(a$dt,origin = "1970-01-01",tz="UTC"))
+weather$dt <- a$dt
+rm(list = ls()[ls()!="weather"])
+weather$hour <- as.numeric(as.character(weather$hour))
+names(weather)<- gsub("^all","alll",names(weather))
+
+
+drv <- JDBC("com.mysql.jdbc.Driver",
+            "D:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+            # "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+
+
+
+weather$date<- as.character(weather$date)
+weather$pod<- as.character(weather$pod)
+weather$main<- as.character(weather$main)
+weather$description<- as.character(weather$description)
+weather$icon<- as.character(weather$icon)
+# добавляем время залива по UTC от GMT+3 
+weather$date_zalive <- as.character(Sys.time()-(3*60*60))
+
+
+for(i in 1:nrow(weather)){
+  req <- paste("INSERT INTO historical_data_weather (dt,dt_iso,city_id,temp,temp_min, temp_max, pressure, sea_level,
+               grnd_level, humidity, wind_speed,wind_deg,rain_3h,snow_3h,clouds_all,weather_id,weather_main,weather_description,weather_icon,date_zaliva
+  ) VALUES
+               (
+               ",weather[i,23],",
+               '",weather[i,22],"',
+               ",weather[i,3],",
+               ",ifelse(is.na(weather[i,4]),"NULL",weather[i,4]),",
+               ",ifelse(is.na(weather[i,7]),"NULL",weather[i,7]),",
+               ",ifelse(is.na(weather[i,8]),"NULL",weather[i,8]),",
+               ",ifelse(is.na(weather[i,5]),"NULL",weather[i,5]),",
+               ",ifelse(is.na(weather[i,9]),"NULL",weather[i,9]),",
+               ",ifelse(is.na(weather[i,10]),"NULL",weather[i,10]),",
+               ",ifelse(is.na(weather[i,6]),"NULL",weather[i,6]),",
+               ",ifelse(is.na(weather[i,17]),"NULL",weather[i,17]),",
+               ",ifelse(is.na(weather[i,18]),"NULL",weather[i,18]),",
+               ",ifelse(is.na(weather[i,19]),"NULL",weather[i,19]),",
+               ",ifelse(is.na(weather[i,20]),"NULL",weather[i,20]),",
+               ",ifelse(is.na(weather[i,16]),"NULL",weather[i,16]),",
+               ",ifelse(is.na(weather[i,12]),"NULL",weather[i,12]),",
+               ",ifelse(is.na(weather[i,13]),"NULL",paste0("'",weather[i,13],"'")),",
+               ",ifelse(is.na(weather[i,14]),"NULL",paste0("'",weather[i,14],"'")),",
+               ",ifelse(is.na(weather[i,15]),"NULL",paste0("'",weather[i,15],"'")),",
+               '",weather[i,24],"'
+               )"
+               ,sep = "")
+  # not run, but do to send your query 
+  dbSendUpdate(con,req)
+  print(i/nrow(weather))
+}
+dbDisconnect(con)
+
