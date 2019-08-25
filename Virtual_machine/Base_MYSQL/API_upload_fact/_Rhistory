@@ -1,0 +1,512 @@
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+data  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")[]
+}
+data
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+for (i in files) {
+library("RCurl")
+# print(i)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/")
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+if (exists("train")==F) {next}
+if (nrow(train)<=0) {next}
+}
+library("curl")
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+files
+zapis<- function(train){
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+ftpUpload("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv")
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+library("curl")
+library(data.table)
+zapis<- function(train){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+ftpUpload("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv")
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+for (i in files) {
+library("RCurl")
+# print(i)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/")
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+if (exists("train")==F) {next}
+if (nrow(train)<=0) {next}
+zapis(train)
+}
+nrow(train)<=0
+train
+as.data.table(DATE,HOUR,FACT,ID_COMPANY,ID_GTP,CITY_ID)
+as.data.table("DATE,HOUR,FACT,ID_COMPANY,ID_GTP,CITY_ID")
+as.data.table(c("DATE","HOUR","FACT","ID_COMPANY","ID_GTP","CITY_ID"))
+as.data.table(c("DATE","HOUR","FACT","ID_COMPANY","ID_GTP","CITY_ID"),keep.rownames=TRUE)
+as.data.table(c("DATE"=NULL,"HOUR","FACT","ID_COMPANY","ID_GTP","CITY_ID"),keep.rownames=TRUE)
+as.data.table(c("DATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL),keep.rownames=TRUE)
+as.data.table(c("DATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL))
+dasd<- as.data.table(c("DATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL))
+dasd
+nn = c(a=0.1, b=0.2, c=0.3, d=0.4)
+as.data.table(nn)
+as.data.table(nn, keep.rownames=TRUE)
+as.data.table(nn, keep.rownames="rownames")
+cc = c(X="a", Y="b", Z="c")
+as.data.table(cc)
+as.data.table(cc, keep.rownames=TRUE)
+as.data.table(cc, keep.rownames="rownames")
+dasd<- as.data.table(cDATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL)
+dasd<- as.data.table(DATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL)
+dasd<- as.data.table("DATE"=NULL,"HOUR"=NULL,"FACT"=NULL,"ID_COMPANY"=NULL,"ID_GTP"=NULL,"CITY_ID"=NULL)
+dasd<- as.data.table(0)
+dasd
+as.data.table(DT)
+DT = data.table(x=rep(c("x","y","z"),each=2), y=c(1:6))
+as.data.table(DT)
+dasd<- as.data.table(DATE=NULL,HOUR=NULL,FACT=NULL,ID_COMPANY=NULL,ID_GTP=NULL,CITY_ID=NULL)
+dasd<- as.data.table(DATE=1,HOUR=1,FACT=1,ID_COMPANY=1,ID_GTP=1,CITY_ID=1)
+dasd<- data.table(DATE=1,HOUR=1,FACT=1,ID_COMPANY=1,ID_GTP=1,CITY_ID=1)
+dasd
+dasd<- data.table(DATE=NULL,HOUR=1,FACT=1,ID_COMPANY=1,ID_GTP=1,CITY_ID=1)
+dasd<- data.table(DATE=NULL,HOUR=NULL,FACT=NULL,ID_COMPANY=NULL,ID_GTP=NULL,CITY_ID=NULL)
+dasd
+train
+str(train)
+dasd<- data.table(DATE=logical(),HOUR=logical(),FACT=logical(),ID_COMPANY=logical(),ID_GTP=logical(),CITY_ID=logical())
+dasd
+fwrite(dasd,"sdas")
+getwd()
+fwrite(dasd,"sdas.csv")
+fwrite(dasd,"sdas.csv",sep = ";")
+train
+train[0,]
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+files
+i <- files[2]
+i
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+i <- files[2]
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+train[0,]
+train[1,]
+train[0,]
+fwrite(train[0,],"fact.csv")
+getwd()
+i
+folder<- i
+paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv")
+library("curl")
+library(data.table)
+zapis<- function(train,folder){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+ftpUpload(paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+for (i in files) {
+library("RCurl")
+print(i)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/")
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+if (exists("train")==F) {next}
+if (nrow(train)<=0) {next}
+zapis(train)
+}
+library("curl")
+library(data.table)
+zapis<- function(train,folder){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+ftpUpload(paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+for (i in files) {
+library("RCurl")
+print(i)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/")
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",i,"/upload/fact.csv"),dec = ",")
+if (exists("train")==F) {next}
+if (nrow(train)<=0) {next}
+zapis(train=train,folder=i)
+}
+train
+i
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+getwd()
+ftpUpload(paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+folder
+folder=i
+folder
+i
+train
+fold
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+files
+fold <- i
+fold
+fold <- files[2]
+fold
+zapis(train,fold)
+library("curl")
+library(data.table)
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+train
+fold
+files
+fold <- files[1]
+fold
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/fact.csv"),dec = ",")
+train
+train
+fold
+zapis(train,fold)
+zapis<- function(train,folder){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+ftpUpload(paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+zapis(train,fold)
+zapis(train,folder=fold)
+ssss <- function(x,y) {
+print(x)
+print(y+2)
+}
+y <- 15
+x <- 10
+ssss(y,x)
+ssss(x=y,y=x)
+ssss(y=y,x=x)
+getwd()
+paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv")
+(paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/fact.csv")
+paste0("fact.csv", "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/fact.csv")
+fold
+zapis(train,fold)
+zapis<- function(train,folder){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+ftpUpload("fact.csv",paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+zapis(train,fold)
+library("curl")
+library(data.table)
+zapis<- function(train,folder){
+library(RCurl)
+library(jsonlite)
+library(data.table)
+library(RJDBC)
+drv <- JDBC("com.mysql.jdbc.Driver",
+"E:/Cronus/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar", "`")
+# "C:/Users/user/Documents/Downloads/sqldeveloper/jdbc/lib/mysql-connector-java-3.1.14/mysql-connector-java-3.1.14-bin.jar", "`")
+con <- dbConnect(drv,"jdbc:mysql://185.220.32.98:3306/energo","alex", "ksf8DL347#dkfj45*")
+train$DATE_ZALIVA <- Sys.Date()
+train$DATE<- as.Date(train$DATE,"%d.%m .%Y")
+train$DATE <- as.character(train$DATE)
+train$DATE_ZALIVA <- as.character(train$DATE_ZALIVA)
+for(i in 1:nrow(train)){
+req <- paste("INSERT INTO fact_energoeffect (DATE, HOUR, FACT, DATE_ZALIVA,ID_COMPANY,ID_GTP,CITY_ID) VALUES
+('",train[i,"DATE"],"',",train[i,"HOUR"],",",ifelse(is.na(train[i,"FACT"]),"NULL",train[i,"FACT"]),",'",train[i,"DATE_ZALIVA"],"'
+,",train[i,"ID_COMPANY"],",",train[i,"ID_GTP"],",",train[i,"CITY_ID"],"
+)"
+,sep = "")
+# not run, but do to send your query
+dbSendUpdate(con,req)
+print(i/nrow(train))
+}
+library(RCurl)
+# setwd("E:/Cronus/Virtual_machine/Base_MYSQL/API_upload_fact")
+fwrite(train[0,],"fact.csv",sep = ";")
+ftpUpload("fact.csv",paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",folder,"/upload/fact.csv"))
+# TODO сделать удаление "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/energoeffect/upload/fact.csv"
+dbDisconnect(con)
+}
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+for (fold in files) {
+library("RCurl")
+print(fold)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/")
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/fact.csv"),dec = ",")
+if (exists("train")==F) {next}
+if (nrow(train)<=0) {next}
+zapis(train,fold)
+}
+library("curl")
+library(data.table)
+ftp_base <- "ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/"
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+files <- readLines(con)
+close(con)
+files
+library("RCurl")
+print(fold)
+fold <- files[1]
+fold
+print(fold)
+ftp_base <- paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/")
+ftp_base
+list_files <- curl::new_handle()
+curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+con <- curl::curl(url = ftp_base, "r", handle = list_files)
+filess <- readLines(con)
+filess
+close(con)
+if (length(filess)==0) {next }
+train  <- fread(paste0("ftp://api:vfnhbo8934ykfjhg@185.220.32.98/clients/",fold,"/upload/predict_from_gtp.csv"),dec = ",")
+train
+train<- train[!is.na(FACT)]
+if (exists("train")==F) {next}
+exists("train")

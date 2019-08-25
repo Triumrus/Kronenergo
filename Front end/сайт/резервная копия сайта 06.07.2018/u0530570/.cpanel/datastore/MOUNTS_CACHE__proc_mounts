@@ -1,0 +1,12 @@
+rootfs / rootfs rw 0 0
+proc /proc proc rw,relatime 0 0
+sysfs /sys sysfs rw,relatime 0 0
+devtmpfs /dev devtmpfs rw,relatime,size=65865484k,nr_inodes=16466371,mode=755 0 0
+devpts /dev/pts devpts rw,relatime,gid=5,mode=620,ptmxmode=000 0 0
+tmpfs /dev/shm tmpfs rw,relatime 0 0
+/dev/sda3 / ext4 rw,noatime,nodiratime,errors=remount-ro,barrier=1,data=ordered,usrquota,grpquota 0 0
+/proc/bus/usb /proc/bus/usb usbfs rw,relatime 0 0
+/dev/sda1 /boot ext2 rw,noatime,nodiratime,errors=continue,user_xattr,acl 0 0
+tmpfs /tmp tmpfs rw,nosuid,noexec,relatime,size=8388608k 0 0
+none /proc/sys/fs/binfmt_misc binfmt_misc rw,relatime 0 0
+userscpu /cgroup/userscpu cgroup rw,relatime,cpu 0 0

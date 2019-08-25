@@ -1,0 +1,188 @@
+Last login: Thu Jul  5 11:18:34 on ttys000
+a:~ a.yurchenko$ ls
+AnacondaProjects Documents  Movies   Public   config
+Applications  Downloads  Music   anaconda3  tmp
+Desktop   Library   Pictures  code
+a:~ a.yurchenko$ ssh alex@185.220.32.98
+alex@185.220.32.98's password: 
+Last login: Thu Jul  5 10:51:57 2018 from broadband-5-228-134-10.ip.moscow.rt.ru
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+[alex@vps21054 ~]$ ls
+[alex@vps21054 ~]$ su 
+Password: 
+[root@vps21054 alex]# ls
+[root@vps21054 alex]# cd
+[root@vps21054 ~]# ls
+[root@vps21054 ~]# cd /
+[root@vps21054 /]# ls
+bin  boot  dev  email.txt  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+[root@vps21054 /]# cd var
+[root@vps21054 var]# ls
+adm  cache  crash  db  empty  ftp  games  gopher  kerberos  lib  local  lock  log  mail  nis  opt  preserve  run  spool  tmp  var  yp
+[root@vps21054 var]# cd ftp
+[root@vps21054 ftp]# ls
+energoeffect
+[root@vps21054 ftp]# cd
+[root@vps21054 ~]# cd /var/ftp
+[root@vps21054 ftp]# ls
+energoeffect
+[root@vps21054 ftp]# ls -ls
+total 4
+4 drwxr-x---. 4 api clients 4096 Dec  4  2017 energoeffect
+[root@vps21054 ftp]# cd energoeffect/
+[root@vps21054 energoeffect]# ls
+predict  upload
+[root@vps21054 energoeffect]# ls -ls
+total 8
+4 drwxr-xr--. 2 api clients 4096 Jun 18 09:51 predict
+4 drwxrwxr--. 2 api clients 4096 Jun 26 15:00 upload
+[root@vps21054 energoeffect]# cd energoeffect
+bash: cd: energoeffect: No such file or directory
+[root@vps21054 energoeffect]# cd ..
+[root@vps21054 ftp]# ls
+energoeffect
+[root@vps21054 ftp]# cd energoeffect/
+[root@vps21054 energoeffect]# ls
+predict  upload
+[root@vps21054 energoeffect]# 
+[root@vps21054 energoeffect]# 
+[root@vps21054 energoeffect]# 
+[root@vps21054 energoeffect]# 
+[root@vps21054 energoeffect]# cd
+[root@vps21054 ~]# useradd --help
+Usage: useradd [options] LOGIN
+       useradd -D
+       useradd -D [options]
+
+Options:
+  -b, --base-dir BASE_DIR       base directory for the home directory of the
+                                new account
+  -c, --comment COMMENT         GECOS field of the new account
+  -d, --home-dir HOME_DIR       home directory of the new account
+  -D, --defaults                print or change default useradd configuration
+  -e, --expiredate EXPIRE_DATE  expiration date of the new account
+  -f, --inactive INACTIVE       password inactivity period of the new account
+  -g, --gid GROUP               name or ID of the primary group of the new
+                                account
+  -G, --groups GROUPS           list of supplementary groups of the new
+                                account
+  -h, --help                    display this help message and exit
+  -k, --skel SKEL_DIR           use this alternative skeleton directory
+  -K, --key KEY=VALUE           override /etc/login.defs defaults
+  -l, --no-log-init             do not add the user to the lastlog and
+                                faillog databases
+  -m, --create-home             create the user's home directory
+  -M, --no-create-home          do not create the user's home directory
+  -N, --no-user-group           do not create a group with the same name as
+                                the user
+  -o, --non-unique              allow to create users with duplicate
+                                (non-unique) UID
+  -p, --password PASSWORD       encrypted password of the new account
+  -r, --system                  create a system account
+  -R, --root CHROOT_DIR         directory to chroot into
+  -s, --shell SHELL             login shell of the new account
+  -u, --uid UID                 user ID of the new account
+  -U, --user-group              create a group with the same name as the user
+  -Z, --selinux-user SEUSER     use a specific SEUSER for the SELinux user mapping
+
+[root@vps21054 ~]# useradd --base-dir /var/ftp/user1 --home-dir /var/ftp/user1 -G clients user1
+[root@vps21054 ~]# ls /var/ftp/
+energoeffect  user1
+[root@vps21054 ~]# ls /var/ftp/ -ls
+total 8
+4 drwxr-x---. 4 api   clients 4096 Dec  4  2017 energoeffect
+4 drwx------. 2 user1 user1   4096 Jul  5 11:12 user1
+[root@vps21054 ~]# chown user1:clients /var/ftp/user1/
+[root@vps21054 ~]# ls /var/ftp/ -ls
+total 8
+4 drwxr-x---. 4 api   clients 4096 Dec  4  2017 energoeffect
+4 drwx------. 2 user1 clients 4096 Jul  5 11:12 user1
+[root@vps21054 ~]# passwd --help
+Usage: passwd [OPTION...] <accountName>
+  -k, --keep-tokens       keep non-expired authentication tokens
+  -d, --delete            delete the password for the named account (root only)
+  -l, --lock              lock the password for the named account (root only)
+  -u, --unlock            unlock the password for the named account (root only)
+  -e, --expire            expire the password for the named account (root only)
+  -f, --force             force operation
+  -x, --maximum=DAYS      maximum password lifetime (root only)
+  -n, --minimum=DAYS      minimum password lifetime (root only)
+  -w, --warning=DAYS      number of days warning users receives before password expiration (root only)
+  -i, --inactive=DAYS     number of days after password expiration when an account becomes disabled (root only)
+  -S, --status            report password status on the named account (root only)
+  --stdin                 read new tokens from stdin (root only)
+
+Help options:
+  -?, --help              Show this help message
+  --usage                 Display brief usage message
+[root@vps21054 ~]# passwd user1
+Changing password for user user1.
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+[root@vps21054 ~]# passwd user1
+Changing password for user user1.
+New password: 
+BAD PASSWORD: The password fails the dictionary check - it is too simplistic/systematic
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+[root@vps21054 ~]# passwd user1
+Changing password for user user1.
+New password: 
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+[root@vps21054 ~]# cd /var/ftp/
+[root@vps21054 ftp]# ls
+energoeffect  user1
+[root@vps21054 ftp]# ls -ls
+total 8
+4 drwxr-x---. 4 api   clients 4096 Dec  4  2017 energoeffect
+4 drwx------. 2 user1 clients 4096 Jul  5 11:12 user1
+[root@vps21054 ftp]# chmod g+rx /var/ftp/user1/
+[root@vps21054 ftp]# ls -ls
+total 8
+4 drwxr-x---. 4 api   clients 4096 Dec  4  2017 energoeffect
+4 drwxr-x---. 2 user1 clients 4096 Jul  5 11:12 user1
+[root@vps21054 ftp]# ls /var/ftp/energoeffect/ -ls
+total 8
+4 drwxr-xr--. 2 api clients 4096 Jun 18 09:51 predict
+4 drwxrwxr--. 2 api clients 4096 Jun 26 15:00 upload
+[root@vps21054 ftp]# mkdir /var/ftp/user1/predict
+[root@vps21054 ftp]# mkdir /var/ftp/user1/upload
+[root@vps21054 ftp]# ls /var/ftp/user1/ -ls
+total 8
+4 drwxr-xr-x. 2 root root 4096 Jul  5 11:18 predict
+4 drwxr-xr-x. 2 root root 4096 Jul  5 11:18 upload
+[root@vps21054 ftp]# chmod o-x /var/ftp/user1/predict/
+[root@vps21054 ftp]# ls /var/ftp/user1/ -ls
+total 8
+4 drwxr-xr--. 2 root root 4096 Jul  5 11:18 predict
+4 drwxr-xr-x. 2 root root 4096 Jul  5 11:18 upload
+[root@vps21054 ftp]# chmod o-x /var/ftp/user1/upload/
+[root@vps21054 ftp]# chmod g-w /var/ftp/user1/upload/
+[root@vps21054 ftp]# chmod g+w /var/ftp/user1/upload/
+[root@vps21054 ftp]# ls /var/ftp/user1/ -ls
+total 8
+4 drwxr-xr--. 2 root root 4096 Jul  5 11:18 predict
+4 drwxrwxr--. 2 root root 4096 Jul  5 11:18 upload
+[root@vps21054 ftp]# ls /var/ftp/energoeffect -ls
+total 8
+4 drwxr-xr--. 2 api clients 4096 Jun 18 09:51 predict
+4 drwxrwxr--. 2 api clients 4096 Jun 26 15:00 upload
+[root@vps21054 ftp]# ls /var/ftp/
+energoeffect  user1
+[root@vps21054 ftp]# ls /var/ftp/ -ls
+total 8
+4 drwxr-x---. 4 api   clients 4096 Dec  4  2017 energoeffect
+4 drwxr-x---. 4 user1 clients 4096 Jul  5 11:18 user1
+[root@vps21054 ftp]# chown api:clients -R /var/ftp/user1/
+[root@vps21054 ftp]# ls /var/ftp/ -ls
+total 8
+4 drwxr-x---. 4 api clients 4096 Dec  4  2017 energoeffect
+4 drwxr-x---. 4 api clients 4096 Jul  5 11:18 user1
+[root@vps21054 ftp]# ls /var/ftp/user1/ -ls
+total 8
+4 drwxr-xr--. 2 api clients 4096 Jul  5 11:18 predict
+4 drwxrwxr--. 2 api clients 4096 Jul  5 11:18 upload
+[root@vps21054 ftp]# 
